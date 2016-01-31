@@ -6,7 +6,7 @@
 // The tests in package compress/gzip serve as the
 // end-to-end test of the decompressor.
 
-package flate
+package secflate
 
 import (
 	"bytes"

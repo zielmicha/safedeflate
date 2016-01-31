@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package flate
+package secflate
 
 import (
 	"fmt"
 	"io"
 	"math"
+	"log"
 )
 
 const (
@@ -148,6 +149,7 @@ func (d *compressor) writeBlock(tokens []token, index int, eof bool) error {
 // Try to find a match starting at index whose length is greater than prevSize.
 // We only look at chainCount possibilities before giving up.
 func (d *compressor) findMatch(pos int, prevHead int, prevLength int, lookahead int) (length, offset int, ok bool) {
+	log.Println("Find match ", pos, prevHead, prevLength, lookahead)
 	minMatchLook := maxMatchLength
 	if lookahead < minMatchLook {
 		minMatchLook = lookahead
@@ -200,6 +202,9 @@ func (d *compressor) findMatch(pos int, prevHead int, prevLength int, lookahead 
 			break
 		}
 	}
+
+	log.Println("found match ", length, offset, ok)
+	//ok = false
 	return
 }
 

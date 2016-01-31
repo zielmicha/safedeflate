@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package flate
+package secflate
 
 // forwardCopy is like the built-in copy function except that it always goes
 // forward from the start, even if the dst and src overlap.
