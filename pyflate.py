@@ -13,6 +13,7 @@
 # decoding to do with repeated strings.  This has been worked around;
 # see 'bwt_reverse()'.  Correct output is produced in all test cases
 # but ideally the problem would be found...
+import json, os
 
 class BitfieldBase(object):
     def __init__(self, x):
@@ -616,7 +617,10 @@ def gzip_main(field):
                         else:
                             out += out[-distance:length-distance]
                         #print 'copy', -distance, 'count', cached_length, 'bits', b.tellbits() - lz_start, 'data', ''.join(out[-cached_length:])
-                        print repr(''.join(out[-cached_length:]))
+                        if 'HEX' in os.environ:
+                            print 'fragment', ''.join(out[-cached_length:]).encode('hex')
+                        else:
+                            print 'fragment', repr(''.join(out[-cached_length:]))
                     elif 30 <= r1 <= 31:
                         raise "illegal unused distance symbol in use @" + `b.tell()`
                 elif 286 <= r <= 287:

@@ -1,3 +1,7 @@
 *.pyc
 /main
 *.gzip
+/src/secflate/tables.go
+/data.html*
+/training.html*
+/old

@@ -9,6 +9,7 @@ import (
 	"io"
 	"math"
 	"log"
+	"strings"
 )
 
 const (
@@ -146,10 +147,15 @@ func (d *compressor) writeBlock(tokens []token, index int, eof bool) error {
 	return nil
 }
 
+func isAlphanum(c byte) bool {
+	// return (c >= 48 && c <= 57) || (c >= 97 && c <= 122) || (c >= 65 && c <= 90)
+	return (c >= 48 && c <= 57) || (c >= 97 && c <= 102)
+}
+
 // Try to find a match starting at index whose length is greater than prevSize.
 // We only look at chainCount possibilities before giving up.
 func (d *compressor) findMatch(pos int, prevHead int, prevLength int, lookahead int) (length, offset int, ok bool) {
-	log.Println("Find match ", pos, prevHead, prevLength, lookahead)
+	//log.Println("Find match ", pos, prevHead, prevLength, lookahead)
 	minMatchLook := maxMatchLength
 	if lookahead < minMatchLook {
 		minMatchLook = lookahead
@@ -163,12 +169,8 @@ func (d *compressor) findMatch(pos int, prevHead int, prevLength int, lookahead 
 		nice = d.nice
 	}
 
-	// If we've got a match that's good enough, only look in 1/4 the chain.
 	tries := d.chain
 	length = prevLength
-	if length >= d.good {
-		tries >>= 2
-	}
 
 	w0 := win[pos]
 	w1 := win[pos+1]
@@ -203,7 +205,30 @@ func (d *compressor) findMatch(pos int, prevHead int, prevLength int, lookahead 
 		}
 	}
 
-	log.Println("found match ", length, offset, ok)
+	if ok {
+		match := string(win[pos-offset:pos-offset + length])
+		prefixOk := false
+		suffixOk := false
+
+		for _, value := range dictionary {
+			if !isAlphanum(match[0]) && restrictedAlphabet {
+				prefixOk = true
+			} else if strings.HasPrefix(match, value) {
+				prefixOk = true
+			}
+			if !isAlphanum(match[len(match)-1]) && restrictedAlphabet {
+				suffixOk = true
+			} else if strings.HasSuffix(match, value) {
+				suffixOk = true
+			}
+		}
+
+		if !(prefixOk && suffixOk) {
+			ok = false
+		} else if false {
+			log.Println("found match ", length, offset, ok, "[" + match + "]")
+		}
+	}
 	//ok = false
 	return
 }
